@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mega Mercado - Tienda Online</title>
+  <style>
+    /* Estilos base */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f7f7f7;
+    }
+    nav {
+      background-color: #ffe600;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    nav h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      color: #333;
+    }
+    .search {
+      flex: 1;
+      margin: 0 1rem;
+    }
+    .search input {
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+    }
+    .auth button {
+      padding: 0.4rem 0.8rem;
+      margin-left: 0.5rem;
+      background: #3483fa;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .productos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      padding: 1rem;
+    }
+    .producto {
+      background: white;
+      padding: 1rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .producto img {
+      width: 100%;
+      height: 150px;
+      object-fit: contain;
+      border-radius: 5px;
+    }
+    .producto h3 {
+      margin: 0.5rem 0 0;
+      font-size: 1.1rem;
+    }
+    .producto p.precio {
+      color: green;
+      font-weight: bold;
+      margin: 0.3rem 0;
+    }
+    .producto .descripcion {
+      font-size: 0.9rem;
+      color: #555;
+      margin-top: 0.5rem;
+      min-height: 40px;
+    }
+    .producto button {
+      margin-top: 0.5rem;
+      padding: 0.4rem 0.8rem;
+      background-color: #3483fa;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+      font-size: 1rem;
+    }
+    .carrito {
+      background: white;
+      margin: 1rem auto;
+      padding: 1rem;
+      max-width: 600px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+    .carrito h2 {
+      text-align: center;
+      margin: 0 0 1rem;
+    }
+    .carrito ul {
+      list-style: none;
+      padding: 0;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .carrito li {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid #eee;
+      font-size: 0.95rem;
+    }
+    .total, .boton-pago {
+      text-align: center;
+      margin-top: 1rem;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+    .boton-pago button {
+      background: #00b900;
+      color: white;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      font-size: 1.1rem;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+    #btnIrCarrito {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #3483fa;
+      color: white;
+      border: none;
+      padding: 15px 20px;
+      border-radius: 50px;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      z-index: 1000;
+      transition: background-color 0.3s ease;
+    }
+    #btnIrCarrito:hover {
+      background-color: #2968c8;
+    }
+    #modalUbicacion {
+      display: none;
+      position: fixed;
+      z-index: 1500;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5);
+    }
+    #modalContenido {
+      background-color: #fff;
+      margin: 5% auto;
+      padding: 20px 30px 30px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 450px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      text-align: left;
+      position: relative;
+      font-size: 14px;
+    }
+    #modalContenido h3 {
+      margin-top: 0;
+      text-align: center;
+      font-size: 1.4rem;
+      margin-bottom: 15px;
+    }
+    #modalContenido label {
+      display: block;
+      margin-top: 10px;
+      font-weight: 600;
+      color: #333;
+    }
+    #modalContenido input[type="text"],
+    #modalContenido input[type="tel"],
+    #modalContenido select,
+    #modalContenido textarea {
+      width: 100%;
+      padding: 8px 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      resize: none;
+      box-sizing: border-box;
+    }
+    #modalContenido textarea {
+      height: 80px;
+    }
+    #modalContenido button {
+      margin-top: 20px;
+      padding: 12px;
+      font-size: 1.1rem;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background-color: #00b900;
+      color: white;
+      width: 100%;
+      transition: background-color 0.3s ease;
+    }
+    #modalContenido button:hover {
+      background-color: #008000;
+    }
+    #cerrarModal {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: #333;
+      cursor: pointer;
+    }
+    .error {
+      color: #d8000c;
+      font-size: 0.9rem;
+      margin-top: 3px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <h1>Mega Mercado</h1>
+  <div class="search">
+    <input type="text" id="buscador" placeholder="Buscar productos..." oninput="buscarProductos()" />
+  </div>
+  <div class="auth">
+    <button onclick="login()">Login</button>
+    <button onclick="registrar()">Registro</button>
+  </div>
+</nav>
+
+<section class="productos" id="lista-productos">
+  <!-- Productos se insertan aquí -->
+</section>
+
+<section class="carrito" id="seccionCarrito">
+  <h2>🧺 Carrito</h2>
+  <ul id="lista-carrito"></ul>
+  <p class="total">Total: $<span id="total">0</span></p>
+  <div class="boton-pago">
+    <button onclick="abrirModal()">Pagar</button>
+  </div>
+</section>
+
+<button id="btnIrCarrito" onclick="scrollAlCarrito()">🛒 Ir al carrito y pagar</button>
+
+<!-- Modal para ingresar datos -->
+<div id="modalUbicacion">
+  <div id="modalContenido">
+    <span id="cerrarModal" onclick="cerrarModal()">&times;</span>
+    <h3>Información de envío y pago</h3>
+    
+    <form id="formPago" onsubmit="return validarFormulario(event)">
+      <label for="direccion">Dirección completa:</label>
+      <textarea id="direccion" name="direccion" placeholder="Ej: Calle Falsa 123, Ciudad, País" required></textarea>
+      <span class="error" id="errorDireccion">Por favor ingresa tu dirección.</span>
+
+      <label for="nombreTarjeta">Nombre en la tarjeta:</label>
+      <input type="text" id="nombreTarjeta" name="nombreTarjeta" placeholder="Nombre completo" required />
+      <span class="error" id="errorNombreTarjeta">Por favor ingresa el nombre que aparece en la tarjeta.</span>
+
+      <label for="numeroTarjeta">Número de tarjeta:</label>
+      <input type="tel" id="numeroTarjeta" name="numeroTarjeta" maxlength="19" placeholder="1234 5678 9012 3456" required pattern="[\d\s]+" />
+      <span class="error" id="errorNumeroTarjeta">Por favor ingresa un número válido.</span>
+
+      <label for="fechaExp">Fecha de expiración (MM/AA):</label>
+      <input type="text" id="fechaExp" name="fechaExp" maxlength="5" placeholder="MM/AA" required pattern="^(0[1-9]|1[0-2])\/?([0-9]{2})$" />
+      <span class="error" id="errorFechaExp">Por favor ingresa una fecha válida.</span>
+
+      <label for="cvv">CVV:</label>
+      <input type="tel" id="cvv" name="cvv" maxlength="4" placeholder="123" required pattern="^\d{3,4}$" />
+      <span class="error" id="errorCvv">Por favor ingresa un CVV válido.</span>
+
+      <label for="formaPago">Forma de pago:</label>
+      <select id="formaPago" name="formaPago" required>
+        <option value="" disabled selected>Selecciona una opción</option>
+        <option value="credito">Tarjeta de crédito</option>
+        <option value="debito">Tarjeta de débito</option>
+        <option value="paypal">PayPal</option>
+      </select>
+      <span class="error" id="errorFormaPago">Por favor selecciona una forma de pago.</span>
+
+      <button type="submit">Confirmar pago</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  const personajesInternet = [
+    "Shrek", "Peppa Pig", "Sonic", "Among Us", "Pikachu", "Mario", "Kirby", "Hello Kitty",
+    "Minion", "Spider-Man", "Goku", "Naruto", "Doraemon", "SpongeBob", "Tom y Jerry",
+    "Angry Birds", "Winnie the Pooh", "Elsa", "Grogu", "Freddy Fazbear"
+  ];
+
+  const personajesNuevos = [
+    "Khaby Lame", "Bella Poarch", "Charli D'Amelio", "Addison Rae", "Brainrots", "Meme Italiano",
+    "Hatsune Miku", "Kagamine Rin", "Kagamine Len", "Megurine Luka", "Gumi Vocaloid", "IA Vocaloid"
+  ];
+
+  const categorias = [
+    "Polera", "Pantalón", "Peluche", "Zapato", "Bolso", "Celular", "Notebook", "Audífono",
+    "Reloj", "Juguete", "Llavero"
+  ];
+
+  function getColor() {
+    const colores = ["Rojo", "Azul", "Verde", "Negro", "Blanco", "Amarillo", "Gris", "Naranja", "Morado"];
+    return colores[Math.floor(Math.random() * colores.length)];
+  }
+
+  const productos = [];
+  for (let i = 1; i <= 1000; i++) {
+    const categoria = categorias[Math.floor(Math.random() * categorias.length)];
+    let nombre = "";
+    let descripcion = "";
+    let imagen = "";
+    let precio = Math.floor(Math.random() * (500000 - 5000 + 1)) + 5000;
+
+    if (categoria === "Peluche") {
+      const personaje = personajesInternet[Math.floor(Math.random() * personajesInternet.length)];
+      nombre = `Peluche de ${personaje} #${i}`;
+      descripcion = `Peluche suave del personaje ${personaje}, ideal para fans.`;
+      imagen = `https://via.placeholder.com/200?text=${encodeURIComponent(personaje + " Peluche")}`;
+    } else if (categoria === "Llavero") {
+      const personaje = personajesNuevos[Math.floor(Math.random() * personajesNuevos.length)];
+      nombre = `Llavero de ${personaje} #${i}`;
+      descripcion = `Llavero exclusivo con diseño de ${personaje}. Perfecto para coleccionistas.`;
+      imagen = `https://via.placeholder.com/200?text=${encodeURIComponent(personaje + " Llavero")}`;
+    } else {
+      const color = getColor();
+      nombre = `${categoria} ${color} #${i}`;
+      descripcion = `Producto ${categoria.toLowerCase()} en color ${color}.`;
+      imagen = `https://via.placeholder.com/200?text=${encodeURIComponent(categoria + " " + color)}`;
+    }
+
+    productos.push({ id: i, nombre, descripcion, imagen, precio });
+  }
+
+  const listaProductos = document.getElementById("lista-productos");
+  const listaCarrito = document.getElementById("lista-carrito");
+  const totalSpan = document.getElementById("total");
+  const buscador = document.getElementById("buscador");
+  const modal = document.getElementById("modalUbicacion");
+
+  let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+  function mostrarProductos(productosMostrar) {
+    listaProductos.innerHTML = "";
+    productosMostrar.forEach(prod => {
+      const div = document.createElement("div");
+      div.classList.add("producto");
+      div.innerHTML = `
+        <img src="${prod.imagen}" alt="${prod.nombre}" />
+        <h3>${prod.nombre}</h3>
+        <p class="descripcion">${prod.descripcion}</p>
+        <p class="precio">$${prod.precio.toLocaleString('es-CL')}</p>
+        <button onclick="agregarAlCarrito(${prod.id})">Agregar al carrito</button>
+      `;
+      listaProductos.appendChild(div);
+    });
+  }
+
+  function agregarAlCarrito(id) {
+    const producto = productos.find(p => p.id === id);
+    carrito.push(producto);
+    guardarCarrito();
+    actualizarCarrito();
+    alert(`Agregaste "${producto.nombre}" al carrito.`);
+  }
+
+  function actualizarCarrito() {
+    listaCarrito.innerHTML = "";
+    let total = 0;
+    carrito.forEach(prod => {
+      total += prod.precio;
+      const li = document.createElement("li");
+      li.textContent = `${prod.nombre} - $${prod.precio.toLocaleString('es-CL')}`;
+      listaCarrito.appendChild(li);
+    });
+    totalSpan.textContent = total.toLocaleString('es-CL');
+  }
+
+  function guardarCarrito() {
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+  }
+
+  function buscarProductos() {
+    const texto = buscador.value.toLowerCase();
+    const filtrados = productos.filter(p => p.nombre.toLowerCase().includes(texto));
+    mostrarProductos(filtrados);
+  }
+
+  function login() {
+    const usuario = prompt("Ingresa tu nombre de usuario:");
+    if (usuario) alert(`Bienvenido, ${usuario}!`);
+  }
+
+  function registrar() {
+    const nuevo = prompt("Crea tu nombre de usuario:");
+    if (nuevo) alert(`Usuario ${nuevo} registrado correctamente.`);
+  }
+
+  function abrirModal() {
+    if (carrito.length === 0) {
+      alert("Tu carrito está vacío.");
+      return;
+    }
+    // Limpiar formulario y errores
+    document.getElementById("formPago").reset();
+    ocultarErrores();
+    modal.style.display = "block";
+  }
+
+  function cerrarModal() {
+    modal.style.display = "none";
+  }
+
+  function ocultarErrores() {
+    const errores = document.querySelectorAll(".error");
+    errores.forEach(e => e.style.display = "none");
+  }
+
+  function validarFormulario(event) {
+    event.preventDefault();
+    ocultarErrores();
+
+    const direccion = document.getElementById("direccion").value.trim();
+    const nombreTarjeta = document.getElementById("nombreTarjeta").value.trim();
+    const numeroTarjeta = document.getElementById("numeroTarjeta").value.trim();
+    const fechaExp = document.getElementById("fechaExp").value.trim();
+    const cvv = document.getElementById("cvv").value.trim();
+    const formaPago = document.getElementById("formaPago").value;
+
+    let valido = true;
+
+    if (!direccion) {
+      document.getElementById("errorDireccion").style.display = "block";
+      valido = false;
+    }
+    if (!nombreTarjeta) {
+      document.getElementById("errorNombreTarjeta").style.display = "block";
+      valido = false;
+    }
+    if (!numeroTarjeta || !/^\d{13,19}$/.test(numeroTarjeta.replace(/\s+/g, ""))) {
+      document.getElementById("errorNumeroTarjeta").style.display = "block";
+      valido = false;
+    }
+    if (!fechaExp || !/^(0[1-9]|1[0-2])\/?([0-9]{2})$/.test(fechaExp)) {
+      document.getElementById("errorFechaExp").style.display = "block";
+      valido = false;
+    }
+    if (!cvv || !/^\d{3,4}$/.test(cvv)) {
+      document.getElementById("errorCvv").style.display = "block";
+      valido = false;
+    }
+    if (!formaPago) {
+      document.getElementById("errorFormaPago").style.display = "block";
+      valido = false;
+    }
+
+    if (!valido) return false;
+
+    alert(`¡Pago confirmado! \nGracias por tu compra.\n\nEnviaremos los productos a:\n${direccion}`);
+
+    carrito = [];
+    guardarCarrito();
+    actualizarCarrito();
+    cerrarModal();
+    return true;
+  }
+
+  function scrollAlCarrito() {
+    document.getElementById("seccionCarrito").scrollIntoView({ behavior: "smooth" });
+  }
+
+  window.onclick = function(event) {
+    if (event.target === modal) {
+      cerrarModal();
+    }
+  };
+
+  mostrarProductos(productos);
+  actualizarCarrito();
+</script>
+
+</body>
+</html>
